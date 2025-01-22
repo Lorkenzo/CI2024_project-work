@@ -5,27 +5,23 @@ from graphviz import Digraph
 
 def create_formula_graph(F):
     """
-    Crea una rappresentazione ad albero per una formula simbolica.
-    Rispecchia l'ordine dei calcoli effettivi, combinando i termini uno alla volta
-    tramite gli operatori binari.
+    Creates the digraph starting from the formula generating at first the subtrees corresponding to each term,
+    then it matches all the terms following the binary operators order to reproduce the formula logic.
     """
-    if not F or len(F) % 5 != 0:
-        raise ValueError("Il vettore F deve essere non vuoto e un multiplo di 5.")
-
     graph = Digraph(format='png')
-    graph.attr(rankdir='TB')  # Layout top-to-bottom (albero)
+    graph.attr(rankdir='TB')  # Layout top-to-bottom (tree)
 
     num_terms = len(F) // 5
 
-    # Crea i nodi per i termini
+    # Generate nodes for each term
     term_nodes = []
     for i in range(num_terms):
         coeff = round(float(F[5 * i]),4) if round(float(F[5 * i]),4) != 0 else float(F[5 * i])
         unary_op = F[1 + 5 * i]
-        var_cost = round(float(F[2 + 5 * i]),4) if round(float(F[2 + 5 * i]),4) != 0  else float(F[5 * i])
+        var_cost = round(float(F[2 + 5 * i]),4) if round(float(F[2 + 5 * i]),4) != 0  else float(F[2 + 5 * i])
         column = F[3 + 5 * i]
 
-        # Nodi specifici del termine
+        # Names of the nodes for each term
         coeff_node = f"{i}_coeff"
         mul_node = f"{i}_mul"
         unary_node = f"{i}_unary"
@@ -36,51 +32,41 @@ def create_formula_graph(F):
         graph.node(unary_node, label=f"{unary_op}", shape="circle")
         graph.node(var_node, label=f"{var_cost} {column}", shape="box")
 
-        # Collegamenti per il termine
-        graph.edge(coeff_node, mul_node)
+        # links between nodes of the subtree (fixed)
+        graph.edge(mul_node, coeff_node)
         graph.edge(mul_node, unary_node)
         graph.edge(unary_node, var_node)
 
-        # Salva il nodo rappresentante il termine per uso successivo
-        term_nodes.append(coeff_node)
+        term_nodes.append(mul_node)
 
-    # Crea l'albero seguendo i calcoli effettivi
- 
-
-    # Collega i termini uno alla volta tramite operatori binari
+    # Link all the subtrees generated with binary operators
     current_node = term_nodes[0]
     for i in range(1, num_terms):
-        operator = F[4 + 5 * i]  # Operatore binario corrente
-        op_node = f"op_{i}"  # Nodo operatore binario
+        operator = F[4 + 5 * i]  # Current binary op
+        op_node = f"op_{i}"  # OpBin node name
 
         graph.node(op_node, label=operator, shape="circle")
 
         if i == 1:
-            graph.edge(op_node, term_nodes[i])  # Collega il termine successivo
-            graph.edge(op_node, current_node)  # Collega il risultato parziale corrente
+            graph.edge(op_node, term_nodes[i])  
+            graph.edge(op_node, current_node) 
         else:
-            graph.edge(op_node, term_nodes[i])  # Collega il termine successivo
-            graph.edge(current_node, op_node)  # Collega il risultato parziale corrente    
-        # Aggiorna il nodo corrente al risultato parziale
+            graph.edge(op_node, term_nodes[i])  
+            graph.edge(current_node, op_node)   
         current_node = op_node
-
-    # Collega l'ultimo risultato parziale alla radice
-    #graph.edge(result_node, current_node)
 
     return graph
 
-
+# Usage Example
 if __name__ == "__main__":
     F = [
-    "1.0", "identity", "2.0", "X_0", "+",
+    "1.0", "tan", "2.0", "X_0", "+",
     "0.5", "log", "3.0", "X_1", "*",
     "2.0", "sin", "1.0", "X_2", "-"
     ]
 
     graph = create_formula_graph(F)
 
-    # Genera l'immagine direttamente in memoria
     img = graph.pipe("png")
 
-    # Mostra l'immagine
     display(Image(img))

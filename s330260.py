@@ -22,14 +22,14 @@ def f2(x: np.ndarray) -> np.ndarray: ...
 def f3(x: np.ndarray) -> np.ndarray: ...
 
 
-def f4(x: np.ndarray) -> np.ndarray: ...
+def f4(x: np.ndarray) -> np.ndarray:
+    return (((7 * np.cos(x[1])) + (3.2882 * np.cos(0.0193 * x[0]))) + (0.1038 * -0.8764 * x[0]))
 
+def f5(x: np.ndarray) -> np.ndarray:
+    return ((((-(8.1123e-10 * np.cos(0.5608 * x[1])) * (3.7141e-11 * np.exp(1.2721 * x[0]))) * (1.9054e-11 * np.arctan(0.333 * x[0]))) / (9.1444e-10 * np.exp(-0.9812 * x[1]))) / (-3.1266e-10 * 1.0488 * x[0]))
 
-def f5(x: np.ndarray) -> np.ndarray: ...
-
-
-def f6(x: np.ndarray) -> np.ndarray: ...
-
+def f6(x: np.ndarray) -> np.ndarray:
+    return ((1.2832 * 1.3207 * x[1]) - 0.4743 * 1.464 * x[0])
 
 def f7(x: np.ndarray) -> np.ndarray: ...
 
